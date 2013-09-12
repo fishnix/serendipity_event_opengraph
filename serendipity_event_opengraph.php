@@ -81,11 +81,6 @@ class serendipity_event_opengraph extends serendipity_event
             case 'frontend_header':
               if (!isset($GLOBALS['entry'][0])) return true;
 
-              echo '<!-- ECF ' . $this->get_config('enable_og_metadata') . '-->';
-              // foreach ($this->get_config as $key => $value) {
-              //   echo '<!-- ' . $key . ' : '. $value . ' -->' . "\n";
-              // }
-
               if ($this->get_config('enable_og_metadata')) {
                 // Borrowed from serendipity_event_facebook
                 // Taken from: http://developers.facebook.com/docs/opengraph/
@@ -99,7 +94,7 @@ class serendipity_event_opengraph extends serendipity_event
                 echo '<meta property="og:url" content="http' . ($_SERVER['HTTPS'] ? 's' : '') . '://' . $_SERVER['HTTP_HOST'] . htmlspecialchars($_SERVER['REQUEST_URI']) . '" />' . "\n";
                 
                 if (preg_match('@<img.*src=["\'](.+)["\']@imsU', $GLOBALS['entry'][0]['body'] . $GLOBALS['entry'][0]['extended'], $im)) {
-                    echo '<meta property="og:image" content="' . $im[1] . '" />' . "\n";
+                    echo '<meta property="og:image" content="http' . ($_SERVER['HTTPS'] ? 's' : '') . '://' . $_SERVER['HTTP_HOST'] . $im[1] . '" />' . "\n";
                 }
               }
               return true;
