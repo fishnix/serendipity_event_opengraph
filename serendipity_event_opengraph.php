@@ -58,7 +58,7 @@ class serendipity_event_opengraph extends serendipity_event
         case 'enable_og_metadata':
           $propbag->add('name',           PLUGIN_EVENT_OG_PROP_META_ON);
           $propbag->add('description',    PLUGIN_EVENT_OG_PROP_META_ON_DESC);
-          $propbag->add('default',        'true');
+          $propbag->add('default',        true);
           $propbag->add('type',           'boolean');
         break;
         default:
