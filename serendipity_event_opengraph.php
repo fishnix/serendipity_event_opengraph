@@ -37,7 +37,7 @@ class serendipity_event_opengraph extends serendipity_event
         $propbag->add('requirements', array(
             'serendipity' => '1.5.0',
             'smarty'      => '2.6.7',
-            'php'         => '5.2.0'
+            'php'         => '5.1.0'
         ));
             
       $propbag->add('event_hooks',   array(
