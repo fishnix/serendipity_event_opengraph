@@ -224,6 +224,10 @@ class serendipity_event_seo extends serendipity_event
           }
 
           if ($this->get_config('enable_pe_metadata')) {
+            $title = htmlspecialchars(trim(strip_tags($GLOBALS['entry'][0]['title'])));
+            $desc = str_replace("\n", " ", trim(substr(strip_tags($GLOBALS['entry'][0]['body']), 0, 200) . '...'));
+            echo '<meta name="pubexchange:headline" content="' . $title . '" />' . "\n";
+            echo '<meta name="pubexchange:description" content="' . $desc . '" />' . "\n";
             if (preg_match('@<img.*src=["\'](.+)["\']@imsU', $GLOBALS['entry'][0]['body'] . $GLOBALS['entry'][0]['extended'], $im)) {
               $imagefile = pathinfo($im[1]);
               $thumbnail = $imagefile['dirname'] . '/' . $imagefile['filename'] . '.serendipityThumb' . '.' . $imagefile['extension'];
