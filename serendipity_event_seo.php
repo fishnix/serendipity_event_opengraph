@@ -52,6 +52,7 @@ class serendipity_event_seo extends serendipity_event
     $conf_array[] = 'twitter_creator';
     $conf_array[] = 'enable_gp_metadata';
     $conf_array[] = 'google_publisher';
+    $conf_array[] = 'enable_pe_metadata';
     $conf_array[] = 'enable_misc_metadata';
 
     $propbag->add('configuration', $conf_array);
@@ -110,6 +111,12 @@ class serendipity_event_seo extends serendipity_event
         $propbag->add('description',    PLUGIN_EVENT_SEO_GP_PUBLISHER_DESC);
         $propbag->add('default',        '');
         $propbag->add('type',           'string');
+        break;
+      case 'enable_pe_metadata':
+        $propbag->add('name',           PLUGIN_EVENT_SEO_PE_META_ON);
+        $propbag->add('description',    PLUGIN_EVENT_SEO_PE_META_ON_DESC);
+        $propbag->add('default',        true);
+        $propbag->add('type',           'boolean');
         break;
       case 'enable_misc_metadata':
         $propbag->add('name',           PLUGIN_EVENT_SEO_MISC_META_ON);
@@ -214,6 +221,14 @@ class serendipity_event_seo extends serendipity_event
             echo '<link rel="canonical" href="http' . ($_SERVER['HTTPS'] ? 's' : '') . '://' . $_SERVER['HTTP_HOST'] . htmlspecialchars($_SERVER['REQUEST_URI']) . '" />' . "\n";
             echo '<link rel="publisher" href="' . htmlspecialchars($this->get_config('google_publisher')) . '" />' . "\n";
 
+          }
+
+          if ($this->get_config('enable_pe_metadata')) {
+            if (preg_match('@<img.*src=["\'](.+)["\']@imsU', $GLOBALS['entry'][0]['body'] . $GLOBALS['entry'][0]['extended'], $im)) {
+              $imagefile = pathinfo($im[1]);
+              $thumbnail = $imagefile['dirname'] . '/' . $imagefile['filename'] . '.serendipityThumb' . '.' . $imagefile['extension'];
+              echo '<meta name="pubexchange:image" content="http' . ($_SERVER['HTTPS'] ? 's' : '') . '://' . $_SERVER['HTTP_HOST'] . $thumbnail . '" />' . "\n";
+            }
           }
 
           if ($this->get_config('enable_misc_metadata')) {

@@ -25,6 +25,8 @@
 @define('PLUGIN_EVENT_SEO_GP_META_ON_DESC', 'Attempt to insert google plus metadata?');
 @define('PLUGIN_EVENT_SEO_GP_PUBLISHER', 'Google Plus Publisher URL');
 @define('PLUGIN_EVENT_SEO_GP_PUBLISHER_DESC', '');
+@define('PLUGIN_EVENT_SEO_PE_META_ON', 'Insert PubExchange Metadata?');
+@define('PLUGIN_EVENT_SEO_PE_META_ON_DESC', 'Attempt to insert the pubechange metadata?');
 @define('PLUGIN_EVENT_SEO_MISC_META_ON', 'Insert Misc Metadata?');
 @define('PLUGIN_EVENT_SEO_MISC_META_ON_DESC', 'Attempt to insert miscellaneous metadata?');
 ?>
