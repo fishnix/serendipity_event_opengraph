@@ -9,6 +9,8 @@
 @define('PLUGIN_EVENT_SEO_INSTALL', '');
 @define('PLUGIN_EVENT_SEO_NAME', 'SEO Plugin');
 @define('PLUGIN_EVENT_SEO_DESC', 'Implements SEO Meta Tags');
+@define('PLUGIN_EVENT_SEO_OG_APP_ID', 'Facebook App ID');
+@define('PLUGIN_EVENT_SEO_OG_APP_ID_DESC', 'Facebook Developer Application ID');
 @define('PLUGIN_EVENT_SEO_OG_META_ON', 'Insert Opengraph Metadata?');
 @define('PLUGIN_EVENT_SEO_OG_META_ON_DESC', 'Attempt to insert og:xxxx metadata?');
 @define('PLUGIN_EVENT_SEO_OG_PUBLISHER', 'Facebook Publisher URL');
