@@ -7,3 +7,7 @@
 
 20160514 ECF
  * Facebook app_id
+
+20170111 ECF
+ * Cleanup code/factor out into functions
+ * Use metadeta from plugin if applicable
