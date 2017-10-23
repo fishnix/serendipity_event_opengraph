@@ -168,7 +168,7 @@ class serendipity_event_seo extends serendipity_event
             $desc = serendipity_specialchars($desc);
 
             if (preg_match('@<img.*src=["\'](.+)["\']@imsU', $GLOBALS['entry'][0]['body'] . $GLOBALS['entry'][0]['extended'], $im)) {
-              $image = serendipity_specialchars('http' . ($_SERVER['HTTPS'] ? 's' : '') . '://' . $_SERVER['HTTP_HOST'] . $im[1]);
+              $image = serendipity_specialchars(rtrim($serendipity['baseURL'], '/') . $im[1]);
             } else {
               $image = false;
             }
