@@ -154,7 +154,7 @@ class serendipity_event_seo extends serendipity_event
           echo '<!-- serendipity_event_seo ' . PLUGIN_EVENT_SEO_VERSION . ' -->' . "\n";
 
           $site = serendipity_specialchars($serendipity['blogTitle']);
-          $url = serendipity_specialchars('http' . ($_SERVER['HTTPS'] ? 's' : '') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+          $url = serendipity_specialchars(rtrim($serendipity['baseURL'], '/') . $_SERVER['REQUEST_URI']);
 
           // If this is an individual entry....
           if (isset($GLOBALS['entry'][0])) {
@@ -201,7 +201,7 @@ class serendipity_event_seo extends serendipity_event
           $time_end = microtime(true);
           $time = $time_end - $time_start;
 
-          echo '<!-- serendipity_event_seo :::TIMING::: ' . $time . ' seconds' . "\n";
+          echo '<!-- serendipity_event_seo :::TIMING::: ' . $time . ' seconds -->' . "\n";
 
           return true;
           break;
