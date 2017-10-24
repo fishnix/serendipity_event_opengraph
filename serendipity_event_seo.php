@@ -178,14 +178,15 @@ class serendipity_event_seo extends serendipity_event
             // set the title to the blog title
             $title = serendipity_specialchars($serendipity['blogTitle']);
             $desc = serendipity_specialchars($serendipity['blogDescription']);
+            $entry = null;
           }
 
           if ($this->get_config('enable_og_metadata')) {
-            $this->generate_og_metadata($title, $desc, $site, $url, $image, $individual);
+            $this->generate_og_metadata($entry, $title, $desc, $site, $url, $image);
           }
 
           if ($this->get_config('enable_tw_metadata')) {
-            $this->generate_tw_metadata($title, $desc, $site, $image, $individual);
+            $this->generate_tw_metadata($entry, $title, $desc, $site, $image);
           }
 
           if ($this->get_config('enable_gp_metadata')) {
@@ -193,11 +194,11 @@ class serendipity_event_seo extends serendipity_event
           }
 
           if ($this->get_config('enable_misc_metadata')) {
-            $this->generate_misc_metadata($individual);
+            $this->generate_misc_metadata($entry);
           }
 
           if ($this->get_config('enable_pe_metadata')) {
-            $this->generate_pe_metadata($title, $desc, $image, $individual);
+            $this->generate_pe_metadata($entry, $title, $desc, $image);
           }
 
           $time_end = microtime(true);
@@ -215,7 +216,7 @@ class serendipity_event_seo extends serendipity_event
     }
   }
 
-  function generate_og_metadata(&$title, &$desc, &$site, &$url, &$image, $entry_page = false) {
+  function generate_og_metadata(&$entry, &$title, &$desc, &$site, &$url, &$image) {
     // Content borrowed from serendipity_event_facebook,
     // http://developers.facebook.com/docs/opengraph/
     echo '<meta property="fb:app_id" content="' . $this->get_config('fb_app_id') . '" />' . "\n";
@@ -227,9 +228,9 @@ class serendipity_event_seo extends serendipity_event
     echo '<meta property="article:publisher" content="' . serendipity_specialchars($this->get_config('fb_publisher')) . '" />' . "\n";
     echo '<meta property="og:site_name" content="' . $site . '" />' . "\n";
 
-    if ($entry_page) {
+    if (isset($entry)) {
       echo '<meta property="og:type" content="article" />' . "\n";
-      echo '<meta property="og:updated_time" content="' . date('c', $GLOBALS['entry'][0]['last_modified']) . '" />' . "\n";
+      echo '<meta property="og:updated_time" content="' . date('c', $entry['last_modified']) . '" />' . "\n";
       /* TODO: <meta property="article:section" content="SECTION NAME" /> */
 
       if ($image) {
@@ -240,7 +241,7 @@ class serendipity_event_seo extends serendipity_event
     }
   }
 
-  function generate_tw_metadata(&$title, &$desc, &$site, $entry_page = false) {
+  function generate_tw_metadata(&$entry, &$title, &$desc, &$site) {
     echo '<meta name="twitter:card" content="summary_large_image" />' . "\n";
     echo '<meta name="twitter:title" content="' . $title . '" />' . "\n";
     echo '<meta name="twitter:description" content="' . $desc . '" />' . "\n";
@@ -258,17 +259,15 @@ class serendipity_event_seo extends serendipity_event
     echo '<link rel="publisher" href="' . serendipity_specialchars($this->get_config('google_publisher')) . '" />' . "\n";
   }
 
-  function generate_misc_metadata($entry_page = false) {
-    if ($entry_page) {
-      echo '<meta property="article:published_time" content="' . date('c', $GLOBALS['entry'][0]['timestamp']) . '" />' . "\n";
-      echo '<meta property="article:modified_time" content="' . date('c', $GLOBALS['entry'][0]['last_modified']) . '" />' . "\n";
-    } else {
-      /* NA */
+  function generate_misc_metadata(&$entry) {
+    if (isset($entry)) {
+      echo '<meta property="article:published_time" content="' . date('c', $entry['timestamp']) . '" />' . "\n";
+      echo '<meta property="article:modified_time" content="' . date('c', $entry['last_modified']) . '" />' . "\n";
     }
   }
 
-  function generate_pe_metadata(&$title, &$desc, &$image, $entry_page = false) {
-    if ($entry_page) {
+  function generate_pe_metadata(&$entry, &$title, &$desc, &$image) {
+    if (isset($entry)) {
       echo '<meta name="pubexchange:headline" content="' . $title . '" />' . "\n";
       echo '<meta name="pubexchange:description" content="' . $desc . '" />' . "\n";
       if ($image) {
@@ -276,8 +275,6 @@ class serendipity_event_seo extends serendipity_event
         $thumbnail = $imagefile['dirname'] . '/' . $imagefile['filename'] . '.serendipityThumb' . '.' . $imagefile['extension'];
         echo '<meta name="pubexchange:image" content="' . $thumbnail . '" />' . "\n";
       }
-    } else {
-      /* NA */
     }
   }
 
