@@ -11,3 +11,6 @@
 20170111 ECF
  * Cleanup code/factor out into functions
  * Use metadeta from plugin if applicable
+
+20171023 ECF
+ * Switch to simple HTML DOM parsing instead of regex/fix failure to match on image

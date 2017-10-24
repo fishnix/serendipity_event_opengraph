@@ -7,6 +7,8 @@
 
 */
 
+// $serendipity['production'] = 'debug';
+
 if (IN_serendipity != true) {
   die ("Don't hack!");
 }
@@ -150,28 +152,28 @@ class serendipity_event_seo extends serendipity_event
       switch ($event) {
         case 'frontend_header':
           $time_start = microtime(true);
-
           echo '<!-- serendipity_event_seo ' . PLUGIN_EVENT_SEO_VERSION . ' -->' . "\n";
 
           $site = serendipity_specialchars($serendipity['blogTitle']);
           $url = serendipity_specialchars(rtrim($serendipity['baseURL'], '/') . $_SERVER['REQUEST_URI']);
 
-          // If this is an individual entry....
-          if (isset($GLOBALS['entry'][0])) {
-            // set the title to the entry title
-            $title = serendipity_specialchars(trim(strip_tags($GLOBALS['entry'][0]['title'])));
+          // Start by assuming this is a landing page
+          $individual = false;
 
-            $desc = $GLOBALS['entry'][0]['properties']['meta_description'];
+          // If this is an individual entry....
+          if (isset($serendipity['GET']['id'])) {
+            $individual = true;
+            $entry = serendipity_fetchEntry('id', $serendipity['GET']['id']);
+
+            // set the title to the entry title
+            $title = serendipity_specialchars(trim(strip_tags($entry['title'])));
+
+            $desc = $entry['properties']['meta_description'];
             if (empty($desc)) {
-              $desc = str_replace("\n", " ", trim(substr(strip_tags($GLOBALS['entry'][0]['body']), 0, 200) . '...'));
+              $desc = str_replace("\n", " ", trim(substr(strip_tags($entry['body']), 0, 200) . '...'));
             }
             $desc = serendipity_specialchars($desc);
-
-            if (preg_match('@<img.*src=["\'](.+)["\']@imsU', $GLOBALS['entry'][0]['body'] . $GLOBALS['entry'][0]['extended'], $im)) {
-              $image = serendipity_specialchars(rtrim($serendipity['baseURL'], '/') . $im[1]);
-            } else {
-              $image = false;
-            }
+            $image = $this->get_first_image($entry['body'] . $entry['extended']);
           } else {
             // set the title to the blog title
             $title = serendipity_specialchars($serendipity['blogTitle']);
@@ -179,11 +181,11 @@ class serendipity_event_seo extends serendipity_event
           }
 
           if ($this->get_config('enable_og_metadata')) {
-            $this->generate_og_metadata($title, $desc, $site, $url, $image, isset($GLOBALS['entry'][0]));
+            $this->generate_og_metadata($title, $desc, $site, $url, $image, $individual);
           }
 
           if ($this->get_config('enable_tw_metadata')) {
-            $this->generate_tw_metadata($title, $desc, $site, $image, isset($GLOBALS['entry'][0]));
+            $this->generate_tw_metadata($title, $desc, $site, $image, $individual);
           }
 
           if ($this->get_config('enable_gp_metadata')) {
@@ -191,11 +193,11 @@ class serendipity_event_seo extends serendipity_event
           }
 
           if ($this->get_config('enable_misc_metadata')) {
-            $this->generate_misc_metadata(isset($GLOBALS['entry'][0]));
+            $this->generate_misc_metadata($individual);
           }
 
           if ($this->get_config('enable_pe_metadata')) {
-            $this->generate_pe_metadata($title, $desc, $image, isset($GLOBALS['entry'][0]));
+            $this->generate_pe_metadata($title, $desc, $image, $individual);
           }
 
           $time_end = microtime(true);
@@ -277,6 +279,18 @@ class serendipity_event_seo extends serendipity_event
     } else {
       /* NA */
     }
+  }
+
+  function get_first_image($html){
+    require_once 'simple_html_dom.php';
+
+    $post_html = str_get_html($html);
+    $first_img = $post_html->find('img', 0);
+    if ($first_img !== null) {
+        return $first_img->src;
+    }
+
+    return null;
   }
 }
 ?>
