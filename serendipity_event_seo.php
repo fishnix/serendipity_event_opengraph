@@ -245,7 +245,7 @@ class serendipity_event_seo extends serendipity_event
     echo '<meta name="twitter:card" content="summary_large_image" />' . "\n";
     echo '<meta name="twitter:title" content="' . $title . '" />' . "\n";
     echo '<meta name="twitter:description" content="' . $desc . '" />' . "\n";
-    echo '<meta name="twitter:site"' . $site . '" />' . "\n";
+    echo '<meta name="twitter:site" content="' . $site . '" />' . "\n";
     echo '<meta name="twitter:domain" content="' . serendipity_specialchars($this->get_config('twitter_domain')) . '"/>' . "\n";
     echo '<meta name="twitter:creator" content="' . serendipity_specialchars($this->get_config('twitter_creator')) . '"/>' . "\n";
 
