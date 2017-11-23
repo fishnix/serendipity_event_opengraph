@@ -173,7 +173,13 @@ class serendipity_event_seo extends serendipity_event
               $desc = str_replace("\n", " ", trim(substr(strip_tags($entry['body']), 0, 200) . '...'));
             }
             $desc = serendipity_specialchars($desc);
-            $image = $this->get_first_image($entry['body'] . $entry['extended']);
+            $imageArr = $this->get_first_image($entry['body'] . $entry['extended']);
+            $imageId = $imageArr["id"];
+            if ($imageArr["image"]) {
+              $image = serendipity_specialchars(rtrim($serendipity['baseURL'], '/') . $imageArr["image"]);
+            } else {
+              $image = null;
+            }
           } else {
             // set the title to the blog title
             $title = serendipity_specialchars($serendipity['blogTitle']);
@@ -234,6 +240,7 @@ class serendipity_event_seo extends serendipity_event
       /* TODO: <meta property="article:section" content="SECTION NAME" /> */
 
       if ($image) {
+        echo '<!-- Image URL: '. $image . '-->' . "\n";
         echo '<meta property="og:image" content="' . $image . '" />' . "\n";
       }
     } else {
@@ -241,7 +248,7 @@ class serendipity_event_seo extends serendipity_event
     }
   }
 
-  function generate_tw_metadata(&$entry, &$title, &$desc, &$site) {
+  function generate_tw_metadata(&$entry, &$title, &$desc, &$site, &$image) {
     echo '<meta name="twitter:card" content="summary_large_image" />' . "\n";
     echo '<meta name="twitter:title" content="' . $title . '" />' . "\n";
     echo '<meta name="twitter:description" content="' . $desc . '" />' . "\n";
@@ -270,6 +277,7 @@ class serendipity_event_seo extends serendipity_event
     if (isset($entry)) {
       echo '<meta name="pubexchange:headline" content="' . $title . '" />' . "\n";
       echo '<meta name="pubexchange:description" content="' . $desc . '" />' . "\n";
+
       if ($image) {
         $imagefile = pathinfo($image);
         $thumbnail = $imagefile['dirname'] . '/' . $imagefile['filename'] . '.serendipityThumb' . '.' . $imagefile['extension'];
@@ -278,16 +286,30 @@ class serendipity_event_seo extends serendipity_event
     }
   }
 
-  function get_first_image($html){
+  function get_first_image($html) {
     require_once 'simple_html_dom.php';
 
+    $image = [
+      "id" => null,
+      "image" => null
+    ];
+
     $post_html = str_get_html($html);
+
     $first_img = $post_html->find('img', 0);
     if ($first_img !== null) {
-        return $first_img->src;
+      $image["image"] = $first_img->src;
     }
 
-    return null;
+    foreach($post_html->find('comment') as $comment) {
+      $c = explode("s9ymdb:", $comment, 2);
+      if (is_numeric($c)) {
+        $image["id"] = $c;
+        break;
+      }
+    }
+
+    return $image;
   }
 }
 ?>
