@@ -1,3 +1,6 @@
+20180430 ECF
+* Fix php7 function declaration compatibility error
+
 20171123 ECF
  * Fix Image URLS to be fully qualified
 
