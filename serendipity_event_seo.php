@@ -142,7 +142,7 @@ class serendipity_event_seo extends serendipity_event
     return true;
   }
 
-  function event_hook($event, &$bag, &$eventData)
+  function event_hook($event, &$bag, &$eventData, $addData = NULL)
   {
     global $serendipity;
 
