@@ -13,7 +13,7 @@ if (IN_serendipity != true) {
   die ("Don't hack!");
 }
 
-@define('PLUGIN_EVENT_SEO_VERSION', '0.0.5');
+@define('PLUGIN_EVENT_SEO_VERSION', '0.0.6');
 
 // Probe for a language include with constants. Still include defines later on, if some constants were missing
 $probelang = dirname(__FILE__) . '/' . $serendipity['charset'] . 'lang_' . $serendipity['lang'] . '.inc.php';
@@ -231,13 +231,18 @@ class serendipity_event_seo extends serendipity_event
     echo '<meta property="og:title" content="' . $title . '" />' . "\n";
     echo '<meta property="og:description" content="' . $desc . '" />' . "\n";
     echo '<meta property="og:url" content="' . $url . '" />' . "\n";
-    echo '<meta property="article:publisher" content="' . serendipity_specialchars($this->get_config('fb_publisher')) . '" />' . "\n";
     echo '<meta property="og:site_name" content="' . $site . '" />' . "\n";
 
     if (isset($entry)) {
       echo '<meta property="og:type" content="article" />' . "\n";
-      echo '<meta property="og:updated_time" content="' . date('c', $entry['last_modified']) . '" />' . "\n";
-      /* TODO: <meta property="article:section" content="SECTION NAME" /> */
+      // TODO: <meta property="article:section" content="SECTION NAME" /> string - A high-level section name. E.g. Technology
+      echo '<meta property="article:publisher" content="' . serendipity_specialchars($this->get_config('fb_publisher')) . '" />' . "\n";
+      echo '<meta property="article:published_time" content="' . date('c', $entry['timestamp']) . '" />' . "\n";
+      echo '<meta property="article:modified_time" content="' . date('c', $entry['last_modified']) . '" />' . "\n";
+      echo '<meta property="article:author" content="' . $entry['author'] . '" />' . "\n";
+      foreach ($entry['categories'] as $key => $cat) {
+        echo '<meta property="article:tag" content="' . $cat['category_name'] . '" />' . "\n";
+      }
 
       if ($image) {
         echo '<!-- Image URL: '. $image . '-->' . "\n";
@@ -267,10 +272,7 @@ class serendipity_event_seo extends serendipity_event
   }
 
   function generate_misc_metadata(&$entry) {
-    if (isset($entry)) {
-      echo '<meta property="article:published_time" content="' . date('c', $entry['timestamp']) . '" />' . "\n";
-      echo '<meta property="article:modified_time" content="' . date('c', $entry['last_modified']) . '" />' . "\n";
-    }
+    // TODO
   }
 
   function generate_pe_metadata(&$entry, &$title, &$desc, &$image) {
