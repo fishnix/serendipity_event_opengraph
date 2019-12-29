@@ -239,7 +239,7 @@ class serendipity_event_seo extends serendipity_event
       echo '<meta property="article:publisher" content="' . serendipity_specialchars($this->get_config('fb_publisher')) . '" />' . "\n";
       echo '<meta property="article:published_time" content="' . date('c', $entry['timestamp']) . '" />' . "\n";
       echo '<meta property="article:modified_time" content="' . date('c', $entry['last_modified']) . '" />' . "\n";
-      echo '<meta property="article:author" content="' . $entry['author'] . '" />' . "\n";
+      // echo '<meta property="article:author" content="' . $entry['author'] . '" />' . "\n";
       foreach ($entry['categories'] as $key => $cat) {
         echo '<meta property="article:tag" content="' . $cat['category_name'] . '" />' . "\n";
       }
