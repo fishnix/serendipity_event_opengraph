@@ -17,6 +17,8 @@
 @define('PLUGIN_EVENT_SEO_OG_PUBLISHER_DESC', '');
 @define('PLUGIN_EVENT_SEO_OG_ADMINS', 'Facebook Admins');
 @define('PLUGIN_EVENT_SEO_OG_ADMINS_DESC', 'Facebook ID(s) who can see data about your site');
+@define('PLUGIN_EVENT_SEO_OG_IMAGE', 'Default og:image');
+@define('PLUGIN_EVENT_SEO_OG_IMAGE_DESC', 'Default value for os:image metadata if an image cannot be found.');
 @define('PLUGIN_EVENT_SEO_TW_META_ON', 'Insert Twitter Metadata?');
 @define('PLUGIN_EVENT_SEO_TW_META_ON_DESC', 'Attempt to insert twitter metadata?');
 @define('PLUGIN_EVENT_SEO_TW_DOMAIN', 'twitter:domain');
