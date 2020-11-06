@@ -256,8 +256,8 @@ class serendipity_event_seo extends serendipity_event
   function generate_og_metadata(&$entry, &$title, &$desc, &$site, &$url, &$image) {
     // Content borrowed from serendipity_event_facebook,
     // http://developers.facebook.com/docs/opengraph/
-    echo '<meta property="fb:app_id" content="' . $this->get_config('fb_app_id') . '" />' . "\n";
-    echo '<meta property="fb:admins" content="' . $this->get_config('fb_admins') . '" />' . "\n";
+    // echo '<meta property="fb:app_id" content="' . $this->get_config('fb_app_id') . '" />' . "\n";
+    // echo '<meta property="fb:admins" content="' . $this->get_config('fb_admins') . '" />' . "\n";
     echo '<meta property="og:locale" content="en_US" />' . "\n";
     echo '<meta property="og:title" content="' . $title . '" />' . "\n";
     echo '<meta property="og:description" content="' . $desc . '" />' . "\n";
