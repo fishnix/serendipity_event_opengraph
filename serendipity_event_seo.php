@@ -180,7 +180,8 @@ class serendipity_event_seo extends serendipity_event
             $imageArr = $this->get_first_image($entry['body'] . $entry['extended']);
             $imageId = $imageArr["id"];
             if ($imageArr["image"]) {
-              $image = serendipity_specialchars(rtrim($serendipity['baseURL'], '/') . $imageArr["image"]);
+              $image = preg_replace('/^\//', $serendipity['baseURL'], $imageArr["image"]);
+              $image = serendipity_specialchars($image);
             } else {
               $image = $default_image;
             }
@@ -205,7 +206,8 @@ class serendipity_event_seo extends serendipity_event
             $imageArr = $this->get_first_image($content);
             $imageId = $imageArr["id"];
             if ($imageArr["image"]) {
-              $image = serendipity_specialchars(rtrim($serendipity['baseURL'], '/') . $imageArr["image"]);
+              $image = preg_replace('/^\//', $serendipity['baseURL'], $imageArr["image"]);
+              $image = serendipity_specialchars($image);
             } else {
               $image = $default_image;
             }
