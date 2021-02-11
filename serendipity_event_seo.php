@@ -13,7 +13,7 @@ if (IN_serendipity != true) {
   die ("Don't hack!");
 }
 
-@define('PLUGIN_EVENT_SEO_VERSION', '0.0.6');
+@define('PLUGIN_EVENT_SEO_VERSION', '0.1.0');
 
 // Probe for a language include with constants. Still include defines later on, if some constants were missing
 $probelang = dirname(__FILE__) . '/' . $serendipity['charset'] . 'lang_' . $serendipity['lang'] . '.inc.php';
@@ -57,6 +57,7 @@ class serendipity_event_seo extends serendipity_event
     $conf_array[] = 'google_publisher';
     $conf_array[] = 'enable_pe_metadata';
     $conf_array[] = 'enable_misc_metadata';
+    $conf_array[] = 'default_og_image';
 
     $propbag->add('configuration', $conf_array);
   }
@@ -88,6 +89,12 @@ class serendipity_event_seo extends serendipity_event
       case 'fb_admins':
         $propbag->add('name',           PLUGIN_EVENT_SEO_OG_ADMINS);
         $propbag->add('description',    PLUGIN_EVENT_SEO_OG_ADMINS_DESC);
+        $propbag->add('default',        '');
+        $propbag->add('type',           'string');
+        break;
+      case 'default_og_image':
+        $propbag->add('name',           PLUGIN_EVENT_SEO_OG_IMAGE);
+        $propbag->add('description',    PLUGIN_EVENT_SEO_OG_IMAGE_DESC);
         $propbag->add('default',        '');
         $propbag->add('type',           'string');
         break;
@@ -156,13 +163,10 @@ class serendipity_event_seo extends serendipity_event
 
           $site = serendipity_specialchars($serendipity['blogTitle']);
           $url = serendipity_specialchars(rtrim($serendipity['baseURL'], '/') . $_SERVER['REQUEST_URI']);
-
-          // Start by assuming this is a landing page
-          $individual = false;
+          $default_image = $this->get_config('default_og_image');
 
           // If this is an individual entry....
           if (isset($serendipity['GET']['id'])) {
-            $individual = true;
             $entry = serendipity_fetchEntry('id', $serendipity['GET']['id']);
 
             // set the title to the entry title
@@ -176,10 +180,39 @@ class serendipity_event_seo extends serendipity_event
             $imageArr = $this->get_first_image($entry['body'] . $entry['extended']);
             $imageId = $imageArr["id"];
             if ($imageArr["image"]) {
-              $image = serendipity_specialchars(rtrim($serendipity['baseURL'], '/') . $imageArr["image"]);
+              $image = preg_replace('/^\//', $serendipity['baseURL'], $imageArr["image"]);
+              $image = serendipity_specialchars($image);
             } else {
-              $image = null;
+              $image = $default_image;
             }
+          } else if ($serendipity['is_staticpage']) {
+            // set the title to the static page title
+            if ($serendipity['head_title']) {
+              $title = serendipity_specialchars(trim(strip_tags($serendipity['head_title'])));
+            } else {
+              $title = serendipity_specialchars($serendipity['blogTitle']);
+            }
+
+            $content = $serendipity['staticpage_plugin']->staticpage['content'];
+
+            $desc = $serendipity['staticpage_meta_description']['value'];
+            if (empty($desc) && (!empty($content))) {
+              $desc = get_description($content, 50);
+            } else {
+              $desc = $serendipity['blogDescription'];
+            }
+            $desc = serendipity_specialchars($desc);
+
+            $imageArr = $this->get_first_image($content);
+            $imageId = $imageArr["id"];
+            if ($imageArr["image"]) {
+              $image = preg_replace('/^\//', $serendipity['baseURL'], $imageArr["image"]);
+              $image = serendipity_specialchars($image);
+            } else {
+              $image = $default_image;
+            }
+
+            $entry = null;
           } else {
             // set the title to the blog title
             $title = serendipity_specialchars($serendipity['blogTitle']);
@@ -225,13 +258,17 @@ class serendipity_event_seo extends serendipity_event
   function generate_og_metadata(&$entry, &$title, &$desc, &$site, &$url, &$image) {
     // Content borrowed from serendipity_event_facebook,
     // http://developers.facebook.com/docs/opengraph/
-    echo '<meta property="fb:app_id" content="' . $this->get_config('fb_app_id') . '" />' . "\n";
-    echo '<meta property="fb:admins" content="' . $this->get_config('fb_admins') . '" />' . "\n";
+    // echo '<meta property="fb:app_id" content="' . $this->get_config('fb_app_id') . '" />' . "\n";
+    // echo '<meta property="fb:admins" content="' . $this->get_config('fb_admins') . '" />' . "\n";
     echo '<meta property="og:locale" content="en_US" />' . "\n";
     echo '<meta property="og:title" content="' . $title . '" />' . "\n";
     echo '<meta property="og:description" content="' . $desc . '" />' . "\n";
     echo '<meta property="og:url" content="' . $url . '" />' . "\n";
     echo '<meta property="og:site_name" content="' . $site . '" />' . "\n";
+
+    if ($image) {
+      echo '<meta property="og:image" content="' . $image . '" />' . "\n";
+    }
 
     if (isset($entry)) {
       echo '<meta property="og:type" content="article" />' . "\n";
@@ -242,11 +279,6 @@ class serendipity_event_seo extends serendipity_event
       // echo '<meta property="article:author" content="' . $entry['author'] . '" />' . "\n";
       foreach ($entry['categories'] as $key => $cat) {
         echo '<meta property="article:tag" content="' . $cat['category_name'] . '" />' . "\n";
-      }
-
-      if ($image) {
-        echo '<!-- Image URL: '. $image . '-->' . "\n";
-        echo '<meta property="og:image" content="' . $image . '" />' . "\n";
       }
     } else {
       echo '<meta property="og:type" content="website" />' . "\n";
@@ -289,6 +321,10 @@ class serendipity_event_seo extends serendipity_event
   }
 
   function get_first_image($html) {
+    if (empty($html)) {
+      return null;
+    }
+
     require_once 'simple_html_dom.php';
 
     $image = [
@@ -314,4 +350,24 @@ class serendipity_event_seo extends serendipity_event
     return $image;
   }
 }
+
+function get_description($html, $length = 200) {
+  if (empty($html)) {
+    return null;
+  }
+
+  $html =  str_replace("\n", " ", $html);
+
+  $patterns = array();
+  $replacements = array();
+  $patterns[0] = '/<script>.+<\/script>/';
+  $replacements[0] = '<!-- script removed -->';
+
+  $html = preg_replace($patterns, $replacements, $html);
+  $html = strip_tags($html);
+  $desc = trim(substr($html, 0, $length)) . '...';
+
+  return $desc;
+}
+
 ?>
